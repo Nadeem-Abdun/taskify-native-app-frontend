@@ -9,7 +9,7 @@ const Footer = () => {
     const { loading, isAuthenticated } = useSelector(state => state.auth);
     return (
         <View style={styles.container}>
-            <Pressable onPress={() => navigation.navigate(isAuthenticated ? 'Home' : 'SignUp')} disabled={loading}>
+            <Pressable onPress={() => navigation.navigate(isAuthenticated ? 'Home' : 'About')} disabled={loading}>
                 <Icon name='home' style={styles.btnIcon} />
             </Pressable>
             <Pressable onPress={() => navigation.navigate(isAuthenticated ? 'Profile' : 'SignIn')} disabled={loading}>

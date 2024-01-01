@@ -3,18 +3,22 @@ import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { TextInput, Avatar } from 'react-native-paper';
 import SafeAreaViewAndroid from '../utils/SafeAreaViewAndroid';
 import mime from 'mime';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { registerUser } from '../redux/action';
+import Toast from 'react-native-toast-message';
 
 const Main = ({ navigation, ...rest }) => {
-
     const { route } = rest;
     const dispatch = useDispatch();
+    const { user: authUser, loading: authLoading, error: authError, message: authMessage } = useSelector(state => state.auth);
+    const { loading: taskLoading, error: taskError, message: taskMessage } = useSelector(state => state.task);
+    const { loading: passwordLoading, error: passwordError, message: passwordMessage } = useSelector(state => state.password);
+    const { loading: profileLoading, error: profileError, message: profileMessage } = useSelector(state => state.profile);
 
     const [showPassword, setShowPassword] = useState(true);
 
     const [signUp, setSignUp] = useState({
-        avatar: ' ',
+        avatar: '',
         name: '',
         email: '',
         password: '',
@@ -55,15 +59,55 @@ const Main = ({ navigation, ...rest }) => {
         }
     }, [route]);
 
+    useEffect(() => {
+        if (authError || taskError || profileError || passwordError) {
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: `${authError || ''} ${taskError || ''} ${profileError || ''} ${passwordError || ''}`,
+                visibilityTime: 4000,
+                autoHide: true,
+                text1Style: {
+                    fontSize: 20,
+                    fontWeight: '600'
+                },
+                text2Style: {
+                    fontSize: 18,
+                    fontWeight: '500'
+                },
+            });
+            dispatch(clearError());
+        }
+        if (authMessage || taskMessage || profileMessage || passwordMessage) {
+            Toast.show({
+                type: 'success',
+                text1: 'Success',
+                text2: `${authMessage || ''} ${taskMessage || ''} ${profileMessage || ''} ${passwordMessage || ''}`,
+                visibilityTime: 4000,
+                autoHide: true,
+                text1Style: {
+                    fontSize: 20,
+                    fontWeight: '600'
+                },
+                text2Style: {
+                    fontSize: 18,
+                    fontWeight: '500'
+                },
+            });
+            dispatch(clearMessage());
+        }
+    }, [authError, authMessage, taskError, taskMessage, profileError, profileMessage, passwordError, passwordMessage, dispatch]);
+
     return (
         <>
             <View style={styles.container}>
+                <Text style={styles.headingText}>Taskify - Signup</Text>
                 <Avatar.Image
-                    size={140}
-                    source={{ uri: signUp.avatar }}
+                    size={120}
+                    source={{ uri: signUp.avatar ? signUp.avatar : ' ' }}
                     style={{ backgroundColor: '#900' }}
                 />
-                {signUp.avatar === ' ' ?
+                {signUp.avatar === '' ?
                     <Text style={styles.avatarhelpertext} onPress={() => handleAvatar()}>Add Picture</Text>
                     :
                     <Text style={styles.avatarhelpertext} onPress={() => handleAvatar()}>Change Picture</Text>
@@ -120,6 +164,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingBottom: 10,
         backgroundColor: '#fff',
+    },
+    headingText: {
+        fontSize: 24,
+        fontWeight: '500',
+        textAlign: 'center',
+        color: '#474747',
+        marginVertical: 15,
+        width: '100%',
     },
     avatarhelpertext: {
         fontSize: 14,

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
-import { TextInput } from 'react-native-paper';
+import { View, Text, StyleSheet } from 'react-native';
+import { TextInput, Button } from 'react-native-paper';
 import SafeAreaViewAndroid from '../utils/SafeAreaViewAndroid';
 import { useDispatch, useSelector } from 'react-redux';
-import { loginUser, clearError, clearMessage } from '../redux/action';
+import { resetPassword } from '../redux/action';
 import Toast from 'react-native-toast-message';
 
 const Main = ({ navigation, ...rest }) => {
@@ -14,24 +14,22 @@ const Main = ({ navigation, ...rest }) => {
     const { loading: passwordLoading, error: passwordError, message: passwordMessage } = useSelector(state => state.password);
 
     const [showPassword, setShowPassword] = useState(true);
-    const [login, setLogin] = useState({
-        email: '',
-        password: ''
+
+    const [resetPass, setResetPass] = useState({
+        otp: '',
+        newPassword: '',
     });
 
-    const handleLoginFieldChange = (name, value) => {
-        setLogin({
-            ...login,
+    const handleTextFieldChange = (name, value) => {
+        setResetPass({
+            ...resetPass,
             [name]: value
         });
     };
 
-    const handleLoginClick = () => {
-        dispatch(loginUser(login.email, login.password));
-        setLogin({
-            email: '',
-            password: ''
-        });
+    const handleResetPassword = async () => {
+        await dispatch(resetPassword(resetPass.otp, resetPass.newPassword));
+        await navigation.navigate('SignIn');
     };
 
     useEffect(() => {
@@ -74,49 +72,43 @@ const Main = ({ navigation, ...rest }) => {
     }, [authError, authMessage, taskError, taskMessage, profileError, profileMessage, passwordError, passwordMessage, dispatch]);
 
     return (
-        <>
-            <View style={styles.container}>
-                <Text style={styles.headingText}>Taskify - Login</Text>
-                <TextInput
-                    style={styles.textInput}
-                    keyboardType='email-address'
-                    placeholder='Email'
-                    mode='outlined'
-                    value={login.email}
-                    onChangeText={(text) => handleLoginFieldChange('email', text)}
-                />
-                <TextInput
-                    style={styles.textInput}
-                    placeholder='Password'
-                    mode='outlined'
-                    secureTextEntry={showPassword}
-                    value={login.password}
-                    onChangeText={(text) => handleLoginFieldChange('password', text)}
-                    right={<TextInput.Icon icon={showPassword ? 'eye' : 'eye-off'} onPress={() => setShowPassword(!showPassword)} />}
-                />
-                <Pressable style={styles.loginBtn} onPress={() => handleLoginClick()}>
-                    <Text style={styles.loginBtnTxt}>LOGIN</Text>
-                </Pressable>
-                <Text style={styles.signUpHelperText}>Or</Text>
-                <Pressable style={styles.signUpBtn} onPress={() => navigation.navigate('SignUp')}>
-                    <Text style={styles.signUpBtnTxt}>Sign Up</Text>
-                </Pressable>
-                <View style={styles.helperTextContainer}>
-                    <Text style={styles.loginhelpertext}>Forgot Password?</Text>
-                    <Text style={styles.loginText} onPress={() => navigation.navigate('ForgotPassword')}>Reset</Text>
-                </View>
-            </View >
-        </>
+        <View style={styles.container}>
+            <Text style={styles.headingText}>Taskify - Reset Password</Text>
+            <TextInput
+                style={styles.textInput}
+                placeholder='OTP'
+                mode='outlined'
+                keyboardType='numeric'
+                value={resetPass.otp}
+                onChangeText={(text) => handleTextFieldChange('otp', text)}
+            />
+            <TextInput
+                style={styles.textInput}
+                placeholder='New Password'
+                mode='outlined'
+                secureTextEntry={showPassword}
+                value={resetPass.newPassword}
+                onChangeText={(text) => handleTextFieldChange('newPassword', text)}
+                right={<TextInput.Icon icon={showPassword ? 'eye' : 'eye-off'} onPress={() => setShowPassword(!showPassword)} />}
+            />
+            <Button mode='contained' labelStyle={{ fontSize: 18, fontWeight: '600' }} style={styles.resetBtn} textColor='#fff' onPress={() => handleResetPassword()} loading={passwordLoading} disabled={!resetPass.otp || !resetPass.newPassword}>
+                Reset Password
+            </Button>
+            <View style={styles.helperTextContainer}>
+                <Text style={styles.resendHelperText}>Didn't recieve OTP?</Text>
+                <Text style={styles.resendText} onPress={() => navigation.navigate('ForgotPassword')}>Resend OTP</Text>
+            </View>
+        </View >
     )
 }
 
-const SignIn = ({ navigation, ...rest }) => {
+const ResetPassword = ({ navigation, ...rest }) => {
     return (
         <SafeAreaViewAndroid Component={Main} navigation={navigation} {...rest} />
     )
 }
 
-export default SignIn;
+export default ResetPassword;
 
 const styles = StyleSheet.create({
     container: {
@@ -143,32 +135,12 @@ const styles = StyleSheet.create({
         fontSize: 14,
         width: '75%',
     },
-    loginBtn: {
+    resetBtn: {
         backgroundColor: '#900',
-        paddingVertical: 12,
+        paddingVertical: 5,
+        marginVertical: 12,
         borderRadius: 5,
         width: '75%',
-    },
-    loginBtnTxt: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: '500',
-        textAlign: 'center',
-    },
-    signUpBtn: {
-        paddingVertical: 12,
-        borderRadius: 5,
-    },
-    signUpBtnTxt: {
-        color: '#900',
-        fontSize: 16,
-        fontWeight: '500',
-        textAlign: 'center',
-    },
-    signUpHelperText: {
-        fontSize: 14,
-        textAlign: 'center',
-        marginTop: 12,
     },
     helperTextContainer: {
         display: 'flex',
@@ -177,13 +149,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginVertical: 12,
     },
-    loginText: {
+    resendText: {
         color: '#900',
         fontSize: 16,
         fontWeight: '600',
         marginHorizontal: 2,
     },
-    loginhelpertext: {
+    resendHelperText: {
         fontSize: 14,
         marginHorizontal: 2,
     },

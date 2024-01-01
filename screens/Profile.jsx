@@ -3,15 +3,17 @@ import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { TextInput, Avatar, Dialog, Button } from 'react-native-paper';
 import SafeAreaViewAndroid from '../utils/SafeAreaViewAndroid';
 import { useDispatch, useSelector } from 'react-redux';
-import { logoutUser, clearError, clearMessage, updateProfile, loadUser } from '../redux/action';
+import { logoutUser, clearError, clearMessage, updateProfile, loadUser, verifyUser, updatePassword } from '../redux/action';
 import mime from 'mime';
+import Toast from 'react-native-toast-message';
 
 const Main = ({ navigation, ...rest }) => {
-
     const { route } = rest;
-
     const dispatch = useDispatch();
-    const { user, error, message, loading } = useSelector(state => state.auth);
+    const { user: authUser, loading: authLoading, error: authError, message: authMessage } = useSelector(state => state.auth);
+    const { loading: taskLoading, error: taskError, message: taskMessage } = useSelector(state => state.task);
+    const { loading: profileLoading, error: profileError, message: profileMessage } = useSelector(state => state.profile);
+    const { loading: passwordLoading, error: passwordError, message: passwordMessage } = useSelector(state => state.password);
 
     const [openPassDialog, setOpenPassDialog] = useState(false);
     const handlePassDialogOpen = () => {
@@ -26,8 +28,8 @@ const Main = ({ navigation, ...rest }) => {
     const [showPassword, setShowPassword] = useState(true);
 
     const [profile, setProfile] = useState({
-        avatar: user.avatar.url,
-        name: user.name,
+        avatar: authUser.avatar.url,
+        name: authUser.name,
         oldPassword: '',
         newPassword: '',
         otp: '',
@@ -44,7 +46,7 @@ const Main = ({ navigation, ...rest }) => {
         dispatch(logoutUser());
     };
 
-    const updateFormSubmit = async () => {
+    const handleProfileUpdate = async () => {
         const updateProfileForm = await new FormData();
         await updateProfileForm.append("name", profile.name);
         await updateProfileForm.append("avatar", {
@@ -62,13 +64,14 @@ const Main = ({ navigation, ...rest }) => {
         });
     };
 
-    const handleOtpSubmit = () => {
-        console.log(user.verified)
-    }
+    const handleOtpSubmit = async () => {
+        await dispatch(verifyUser(profile.otp));
+    };
 
-    const handleChangePassClick = () => {
-
-    }
+    const handleChangePassClick = async () => {
+        await dispatch(updatePassword(profile.oldPassword, profile.newPassword));
+        await handlePassDialogOpen();
+    };
 
     useEffect(() => {
         if (route && route.params && route.params.image) {
@@ -79,9 +82,49 @@ const Main = ({ navigation, ...rest }) => {
         }
     }, [route]);
 
+    useEffect(() => {
+        if (authError || taskError || profileError || passwordError) {
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: `${authError || ''} ${taskError || ''} ${profileError || ''} ${passwordError || ''}`,
+                visibilityTime: 4000,
+                autoHide: true,
+                text1Style: {
+                    fontSize: 20,
+                    fontWeight: '600'
+                },
+                text2Style: {
+                    fontSize: 18,
+                    fontWeight: '500'
+                },
+            });
+            dispatch(clearError());
+        }
+        if (authMessage || taskMessage || profileMessage || passwordMessage) {
+            Toast.show({
+                type: 'success',
+                text1: 'Success',
+                text2: `${authMessage || ''} ${taskMessage || ''} ${profileMessage || ''} ${passwordMessage || ''}`,
+                visibilityTime: 4000,
+                autoHide: true,
+                text1Style: {
+                    fontSize: 20,
+                    fontWeight: '600'
+                },
+                text2Style: {
+                    fontSize: 18,
+                    fontWeight: '500'
+                },
+            });
+            dispatch(clearMessage());
+        }
+    }, [authError, authMessage, taskError, taskMessage, profileError, profileMessage, passwordError, passwordMessage, dispatch]);
+
     return (
         <>
             <View style={styles.container}>
+                <Text style={styles.headingText}>Taskify - Profile</Text>
                 <Avatar.Image
                     size={140}
                     source={{ uri: profile.avatar }}
@@ -99,10 +142,10 @@ const Main = ({ navigation, ...rest }) => {
                     value={profile.name}
                     onChangeText={(text) => handleTextFieldChange('name', text)}
                 />
-                <Pressable style={styles.registerBtn} onPress={() => updateFormSubmit()}>
-                    <Text style={styles.registerBtnTxt}>UPDATE</Text>
-                </Pressable>
-                {user && user.verified ?
+                <Button mode='contained' labelStyle={{ fontSize: 18, fontWeight: '600' }} style={styles.updateBtn} textColor='#fff' onPress={() => handleProfileUpdate()} loading={profileLoading}>
+                    UPDATE
+                </Button>
+                {authUser && authUser.verified ?
                     <Pressable style={styles.transparentBtn} onPress={() => handlePassDialogOpen()}>
                         <Text style={styles.changePassBtnTxt}>Change Password</Text>
                     </Pressable>
@@ -126,6 +169,7 @@ const Main = ({ navigation, ...rest }) => {
                         value={profile.oldPassword}
                         secureTextEntry={showPassword}
                         mode='outlined'
+                        label='Old Password'
                         placeholder='Old Password'
                         right={<TextInput.Icon icon={showPassword ? 'eye' : 'eye-off'} onPress={() => setShowPassword(!showPassword)} />}
                     />
@@ -135,13 +179,14 @@ const Main = ({ navigation, ...rest }) => {
                         value={profile.newPassword}
                         secureTextEntry={showPassword}
                         mode='outlined'
+                        label='New Password'
                         placeholder='New Password'
                         right={<TextInput.Icon icon={showPassword ? 'eye' : 'eye-off'} onPress={() => setShowPassword(!showPassword)} />}
                     />
                 </Dialog.Content>
                 <Dialog.Actions>
-                    <Button mode='contained-tonal' onPress={() => handlePassDialogOpen()}>Cancel</Button>
-                    <Button mode='contained-tonal' onPress={() => handleChangePassClick()} disabled={!profile.oldPassword || !profile.newPassword || loading}>Submit</Button>
+                    <Button mode='contained' style={styles.dialogBtn} textColor='#fff' onPress={() => handlePassDialogOpen()}>Cancel</Button>
+                    <Button mode='contained' style={styles.dialogBtn} textColor='#fff' onPress={() => handleChangePassClick()} disabled={!profile.oldPassword || !profile.newPassword || profileLoading}>Submit</Button>
                 </Dialog.Actions>
             </Dialog>
             <Dialog visible={openVerifyDialog} onDismiss={handleVerifyDialogOpen} style={{ backgroundColor: '#fff', borderRadius: 10 }}>
@@ -155,12 +200,13 @@ const Main = ({ navigation, ...rest }) => {
                         value={profile.otp}
                         keyboardType='number-pad'
                         mode='outlined'
+                        label='OTP'
                         placeholder='OTP'
                     />
                 </Dialog.Content>
                 <Dialog.Actions>
-                    <Button mode='contained-tonal' onPress={() => handleVerifyDialogOpen()}>Cancel</Button>
-                    <Button mode='contained-tonal' onPress={() => handleOtpSubmit()} disabled={!profile.otp || !profile.otp || loading}>Submit</Button>
+                    <Button mode='contained' style={styles.dialogBtn} textColor='#fff' onPress={() => handleVerifyDialogOpen()}>Cancel</Button>
+                    <Button mode='contained' style={styles.dialogBtn} textColor='#fff' onPress={() => handleOtpSubmit()} disabled={!profile.otp || !profile.otp || authLoading}>Submit</Button>
                 </Dialog.Actions>
             </Dialog>
         </>
@@ -184,6 +230,14 @@ const styles = StyleSheet.create({
         paddingBottom: 10,
         backgroundColor: '#fff',
     },
+    headingText: {
+        fontSize: 24,
+        fontWeight: '500',
+        textAlign: 'center',
+        color: '#474747',
+        marginVertical: 15,
+        width: '100%',
+    },
     avatarhelpertext: {
         fontSize: 14,
         marginTop: 6,
@@ -197,18 +251,12 @@ const styles = StyleSheet.create({
         fontSize: 14,
         width: '75%',
     },
-    registerBtn: {
+    updateBtn: {
         backgroundColor: '#900',
-        paddingVertical: 12,
+        paddingVertical: 5,
         marginVertical: 12,
         borderRadius: 5,
         width: '75%',
-    },
-    registerBtnTxt: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: '500',
-        textAlign: 'center',
     },
     transparentBtn: {
         paddingVertical: 12,
@@ -228,10 +276,11 @@ const styles = StyleSheet.create({
     },
     dialogInput: {
         backgroundColor: '#fff',
-        borderWidth: 1,
-        borderColor: '#b5b5b5',
-        borderRadius: 5,
         marginVertical: 10,
         fontSize: 16,
+    },
+    dialogBtn: {
+        borderRadius: 10,
+        paddingHorizontal: 5,
     }
 });

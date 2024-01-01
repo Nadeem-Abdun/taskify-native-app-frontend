@@ -4,51 +4,51 @@ import { createReducer, createAction } from "@reduxjs/toolkit";
 const registerUserRequest = createAction('registerUserRequest');
 const registerUserSuccess = createAction('registerUserSuccess');
 const registerUserFailure = createAction('registerUserFailure');
-// Verify User Reducer
+// Verify User Action
 const verifyUserRequest = createAction('verifyUserRequest');
 const verifyUserSuccess = createAction('verifyUserSuccess');
 const verifyUserFailure = createAction('verifyUserFailure');
-// Login User Reducer
+// Login User Action
 const loginRequest = createAction('loginRequest');
 const loginSuccess = createAction('loginSuccess');
 const loginFailure = createAction('loginFailure');
-// Logout User Reducer
+// Logout User Action
 const logoutRequest = createAction('logoutRequest');
 const logoutSuccess = createAction('logoutSuccess');
 const logoutFailure = createAction('logoutFailure');
-// Get/Load User Reducer
+// Get/Load User Action
 const loadUserRequest = createAction('loadUserRequest');
 const loadUserSuccess = createAction('loadUserSuccess');
 const loadUserFailure = createAction('loadUserFailure');
-// Forgot Password Reducer
+// Forgot Password Action
 const forgotPasswordRequest = createAction('forgotPasswordRequest');
 const forgotPasswordSuccess = createAction('forgotPasswordSuccess');
 const forgotPasswordFailure = createAction('forgotPasswordFailure');
-// Reset Password Reducer
+// Reset Password Action
 const resetPasswordRequest = createAction('resetPasswordRequest');
 const resetPasswordSuccess = createAction('resetPasswordSuccess');
 const resetPasswordFailure = createAction('resetPasswordFailure');
-// Add Task Reducer
+// Add Task Action
 const addTaskRequest = createAction('addTaskRequest');
 const addTaskSuccess = createAction('addTaskSuccess');
 const addTaskFailure = createAction('addTaskFailure');
-// Update Task Reducer
+// Update Task Action
 const updateTaskRequest = createAction('updateTaskRequest');
 const updateTaskSuccess = createAction('updateTaskSuccess');
 const updateTaskFailure = createAction('updateTaskFailure');
-// Delete Task Reducer
+// Delete Task Action
 const deleteTaskRequest = createAction('deleteTaskRequest');
 const deleteTaskSuccess = createAction('deleteTaskSuccess');
 const deleteTaskFailure = createAction('deleteTaskFailure');
-// Update User Profile Reducer
+// Update User Profile Action
 const updateProfileRequest = createAction('updateProfileRequest');
 const updateProfileSuccess = createAction('updateProfileSuccess');
 const updateProfileFailure = createAction('updateProfileFailure');
-// Update User Password Reducer
+// Update User Password Action
 const updatePasswordRequest = createAction('updatePasswordRequest');
 const updatePasswordSuccess = createAction('updatePasswordSuccess');
 const updatePasswordFailure = createAction('updatePasswordFailure');
-// Clear Reducers
+// Clear Actions
 const clearError = createAction('clearError');
 const clearMessage = createAction('clearMessage');
 
@@ -99,6 +99,20 @@ export const authReducer = createReducer({}, (builder) => {
             state.isAuthenticated = false;
             state.error = action.payload;
         })
+        // Get Or Load User Reducer
+        .addCase(loadUserRequest, (state) => {
+            state.loading = true;
+        })
+        .addCase(loadUserSuccess, (state, action) => {
+            state.loading = false;
+            state.isAuthenticated = true;
+            state.user = action.payload.user;
+        })
+        .addCase(loadUserFailure, (state, action) => {
+            state.loading = false;
+            state.isAuthenticated = false;
+            state.error = action.payload;
+        })
         // Logout User Reducer
         .addCase(logoutRequest, (state) => {
             state.loading = true;
@@ -114,30 +128,40 @@ export const authReducer = createReducer({}, (builder) => {
             state.isAuthenticated = true;
             state.error = action.payload;
         })
-        // Get/Load User Reducer
-        .addCase(loadUserRequest, (state) => {
-            state.loading = true;
-        })
-        .addCase(loadUserSuccess, (state, action) => {
-            state.loading = false;
-            state.isAuthenticated = true;
-            state.user = action.payload.user;
-        })
-        .addCase(loadUserFailure, (state, action) => {
-            state.loading = false;
-            state.isAuthenticated = false;
-            state.error = action.payload;
-        })
-        // Forgot Password Reducer
-
-        // Reset Password Reducer
-
         // Clear Reducers
         .addCase(clearError, (state) => {
             state.error = null;
         })
         .addCase(clearMessage, (state) => {
             state.message = null;
+        })
+});
+
+export const passwordReducer = createReducer({}, (builder) => {
+    builder
+        // Forgot Password Reducer
+        .addCase(forgotPasswordRequest, (state) => {
+            state.loading = true;
+        })
+        .addCase(forgotPasswordSuccess, (state, action) => {
+            state.loading = false;
+            state.message = action.payload.message;
+        })
+        .addCase(forgotPasswordFailure, (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        })
+        // Reset Password Reducer
+        .addCase(resetPasswordRequest, (state) => {
+            state.loading = true;
+        })
+        .addCase(resetPasswordSuccess, (state, action) => {
+            state.loading = false;
+            state.message = action.payload.message;
+        })
+        .addCase(resetPasswordFailure, (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
         })
 });
 
@@ -179,6 +203,17 @@ export const taskReducer = createReducer({}, (builder) => {
             state.loading = false;
             state.error = action.payload;
         })
+        // Clear Reducers
+        .addCase(clearError, (state) => {
+            state.error = null;
+        })
+        .addCase(clearMessage, (state) => {
+            state.message = null;
+        })
+});
+
+export const profileReducer = createReducer({}, (builder) => {
+    builder
         // Update User Profile Reducer
         .addCase(updateProfileRequest, (state) => {
             state.loading = true;

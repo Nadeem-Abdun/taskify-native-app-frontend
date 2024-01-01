@@ -20,8 +20,22 @@ export const registerUser = (formData) => async (dispatch) => {
     }
 }
 
-export const verifyUser = (token) => async (dispatch) => {
-
+export const verifyUser = (otp) => async (dispatch) => {
+    try {
+        dispatch({ type: "verifyUserRequest" });
+        const { data } = await axios.post(
+            `${serverUrl}/verify`,
+            { otp },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            }
+        )
+        dispatch({ type: "verifyUserSuccess", payload: data });
+    } catch (error) {
+        dispatch({ type: "verifyUserFailure", payload: error.response.data.message });
+    }
 }
 
 export const loginUser = (email, password) => async (dispatch) => {
@@ -133,15 +147,57 @@ export const updateProfile = (formData) => async (dispatch) => {
 }
 
 export const updatePassword = (oldPassword, newPassword) => async (dispatch) => {
-
+    try {
+        dispatch({ type: "updatePasswordRequest" });
+        const { data } = await axios.put(
+            `${serverUrl}/updatepassword`,
+            { oldPassword, newPassword },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            }
+        )
+        dispatch({ type: "updatePasswordSuccess", payload: data.message });
+    } catch (error) {
+        dispatch({ type: "updatePasswordFailure", payload: error.response.data.message });
+    }
 }
 
 export const forgotPassword = (email) => async (dispatch) => {
-
+    try {
+        dispatch({ type: "forgotPasswordRequest" });
+        const { data } = await axios.post(
+            `${serverUrl}/forgotpassword`,
+            { email },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            }
+        )
+        dispatch({ type: "forgotPasswordSuccess", payload: data.message });
+    } catch (error) {
+        dispatch({ type: "forgotPasswordFailure", payload: error.response.data.message });
+    }
 }
 
-export const resetPassword = (token, newPassword) => async (dispatch) => {
-
+export const resetPassword = (otp, newPassword) => async (dispatch) => {
+    try {
+        dispatch({ type: "resetPasswordRequest" });
+        const { data } = await axios.put(
+            `${serverUrl}/resetpassword`,
+            { otp, newPassword },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            }
+        )
+        dispatch({ type: "resetPasswordSuccess", payload: data.message });
+    } catch (error) {
+        dispatch({ type: "resetPasswordFailure", payload: error.response.data.message });
+    }
 }
 
 export const clearError = () => async (dispatch) => {
@@ -151,8 +207,3 @@ export const clearError = () => async (dispatch) => {
 export const clearMessage = () => async (dispatch) => {
     dispatch({ type: "clearMessage" });
 }
-
-
-
-
-
