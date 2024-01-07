@@ -9,10 +9,10 @@ const Footer = () => {
     const { loading, isAuthenticated } = useSelector(state => state.auth);
     return (
         <View style={styles.container}>
-            <Pressable onPress={() => navigation.navigate(isAuthenticated ? 'Home' : 'About')} disabled={loading}>
+            <Pressable style={styles.btn} onPress={() => navigation.navigate(isAuthenticated ? 'Home' : 'About')} disabled={loading}>
                 <Icon name='home' style={styles.btnIcon} />
             </Pressable>
-            <Pressable onPress={() => navigation.navigate(isAuthenticated ? 'Profile' : 'SignIn')} disabled={loading}>
+            <Pressable style={styles.btn} onPress={() => navigation.navigate(isAuthenticated ? 'Profile' : 'SignIn')} disabled={loading}>
                 <Icon name='user' style={styles.btnIcon} />
             </Pressable>
         </View>
@@ -27,7 +27,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-evenly',
         alignItems: 'center',
-        paddingVertical: 10,
+        paddingVertical: 5,
+    },
+    btn: {
+        backgroundColor: '#fff',
+        paddingHorizontal: 45,
+        paddingVertical: 7,
     },
     btnIcon: {
         color: '#900',
