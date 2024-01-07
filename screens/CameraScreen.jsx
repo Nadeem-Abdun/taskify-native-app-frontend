@@ -1,16 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
 import { Camera, CameraType } from 'expo-camera';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import * as ImagePicker from 'expo-image-picker';
-import SafeAreaViewAndroid from '../utils/SafeAreaViewAndroid';
+// import SafeAreaViewAndroid from '../utils/SafeAreaViewAndroid';
 
-const Main = ({ navigation, ...rest }) => {
+const CameraScreen = ({ navigation, ...rest }) => {
 
     const { route } = rest;
     const [type, setType] = useState(CameraType.back);
-    const [permission, requestPermission] = Camera.useCameraPermissions();
+    const [permission, requestPermission] = useState(null);
     const [camera, setCamera] = useState(null);
+
+    useEffect(() => {
+        (async () => {
+            const permissionStatus = await Camera.requestCameraPermissionsAsync();
+            if (permissionStatus.status === 'granted') {
+                requestPermission(true);
+            } else {
+                requestPermission(false);
+            }
+        })();
+    }, []);
+
+    const handleReGrantPermission = async () => {
+        const permissionStatus = await Camera.requestCameraPermissionsAsync();
+        if (permissionStatus.status === 'granted') {
+            requestPermission(true);
+        }
+        else {
+            requestPermission(false);
+            alert('Permission to access camera is required!');
+            return;
+        }
+    }
 
     function toggleCameraType() {
         setType(current => (current === CameraType.back ? CameraType.front : CameraType.back));
@@ -54,14 +77,14 @@ const Main = ({ navigation, ...rest }) => {
     }
 
     if (permission === null) {
-        return <View />;
+        return <View style={styles.requestContainer} />;
     }
 
     if (permission === false) {
         return (
             <View style={styles.requestContainer}>
                 <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
-                <Button onPress={requestPermission} title="grant permission" />
+                <Button onPress={() => handleReGrantPermission()} title="grant permission" />
             </View>
         );
     }
@@ -78,11 +101,11 @@ const Main = ({ navigation, ...rest }) => {
     )
 }
 
-const CameraScreen = ({ navigation, ...rest }) => {
-    return (
-        <SafeAreaViewAndroid Component={Main} navigation={navigation} {...rest} />
-    )
-}
+// const CameraScreen = ({ navigation, ...rest }) => {
+//     return (
+//         <SafeAreaViewAndroid Component={Main} navigation={navigation} {...rest} />
+//     )
+// }
 
 export default CameraScreen;
 
@@ -96,7 +119,6 @@ const styles = StyleSheet.create({
     requestContainer: {
         flex: 1,
         justifyContent: 'center',
-        width: '75%'
     },
     buttonContainer: {
         flexDirection: 'row',
