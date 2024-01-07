@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { TextInput } from 'react-native-paper';
-import SafeAreaViewAndroid from '../utils/SafeAreaViewAndroid';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser, clearError, clearMessage } from '../redux/action';
 import Toast from 'react-native-toast-message';
+// import SafeAreaViewAndroid from '../utils/SafeAreaViewAndroid';
 
-const Main = ({ navigation, ...rest }) => {
+const SignIn = ({ navigation, ...rest }) => {
     const dispatch = useDispatch();
     const { user: authUser, loading: authLoading, error: authError, message: authMessage } = useSelector(state => state.auth);
     const { loading: taskLoading, error: taskError, message: taskMessage } = useSelector(state => state.task);
@@ -110,11 +110,11 @@ const Main = ({ navigation, ...rest }) => {
     )
 }
 
-const SignIn = ({ navigation, ...rest }) => {
-    return (
-        <SafeAreaViewAndroid Component={Main} navigation={navigation} {...rest} />
-    )
-}
+// const SignIn = ({ navigation, ...rest }) => {
+//     return (
+//         <SafeAreaViewAndroid Component={Main} navigation={navigation} {...rest} />
+//     )
+// }
 
 export default SignIn;
 

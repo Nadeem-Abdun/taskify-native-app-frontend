@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
 import { Dialog, Button, TextInput } from 'react-native-paper';
-import SafeAreaViewAndroid from '../utils/SafeAreaViewAndroid';
 import TaskCard from '../components/TaskCard';
 import Icon from 'react-native-vector-icons/Entypo';
 import { useDispatch, useSelector } from 'react-redux';
 import { addTask, clearError, clearMessage, loadUser, updateTask, deleteTask } from '../redux/action.js';
 import Toast from 'react-native-toast-message';
+// import SafeAreaViewAndroid from '../utils/SafeAreaViewAndroid';
 
-const Main = ({ navigation, ...rest }) => {
+const Home = ({ navigation, ...rest }) => {
     const dispatch = useDispatch();
     const { user: authUser, loading: authLoading, error: authError, message: authMessage } = useSelector(state => state.auth);
     const { loading: taskLoading, error: taskError, message: taskMessage } = useSelector(state => state.task);
@@ -144,11 +144,11 @@ const Main = ({ navigation, ...rest }) => {
     )
 }
 
-const Home = ({ navigation, ...rest }) => {
-    return (
-        <SafeAreaViewAndroid Component={Main} navigation={navigation} {...rest} />
-    )
-}
+// const Home = ({ navigation, ...rest }) => {
+//     return (
+//         <SafeAreaViewAndroid Component={Main} navigation={navigation} {...rest} />
+//     )
+// }
 
 export default Home;
 

@@ -1,9 +1,9 @@
 import React from 'react';
 import { Text, StyleSheet, Image, ScrollView } from 'react-native';
-import SafeAreaViewAndroid from '../utils/SafeAreaViewAndroid';
 import AboutImg from '../assets/about1.jpg';
+// import SafeAreaViewAndroid from '../utils/SafeAreaViewAndroid';
 
-const Main = ({ navigation, ...rest }) => {
+const About = ({ navigation, ...rest }) => {
     return (
         <ScrollView style={styles.container}>
             <Text style={styles.heading}>Welcome To Taskify</Text>
@@ -30,11 +30,11 @@ const Main = ({ navigation, ...rest }) => {
     );
 };
 
-const About = ({ navigation, ...rest }) => {
-    return (
-        <SafeAreaViewAndroid Component={Main} navigation={navigation} {...rest} />
-    )
-}
+// const About = ({ navigation, ...rest }) => {
+//     return (
+//         <SafeAreaViewAndroid Component={Main} navigation={navigation} {...rest} />
+//     )
+// }
 
 export default About;
 

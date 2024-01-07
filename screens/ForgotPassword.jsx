@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
-import SafeAreaViewAndroid from '../utils/SafeAreaViewAndroid';
 import { useDispatch, useSelector } from 'react-redux';
 import { forgotPassword } from '../redux/action';
 import Toast from 'react-native-toast-message';
+// import SafeAreaViewAndroid from '../utils/SafeAreaViewAndroid';
 
-const Main = ({ navigation, ...rest }) => {
+const ForgotPassword = ({ navigation, ...rest }) => {
     const dispatch = useDispatch();
     const { user: authUser, loading: authLoading, error: authError, message: authMessage } = useSelector(state => state.auth);
     const { loading: taskLoading, error: taskError, message: taskMessage } = useSelector(state => state.task);
@@ -86,11 +86,11 @@ const Main = ({ navigation, ...rest }) => {
     )
 }
 
-const ForgotPassword = ({ navigation, ...rest }) => {
-    return (
-        <SafeAreaViewAndroid Component={Main} navigation={navigation} {...rest} />
-    )
-}
+// const ForgotPassword = ({ navigation, ...rest }) => {
+//     return (
+//         <SafeAreaViewAndroid Component={Main} navigation={navigation} {...rest} />
+//     )
+// }
 
 export default ForgotPassword;
 

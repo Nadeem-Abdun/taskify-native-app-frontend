@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { TextInput, Avatar, Dialog, Button } from 'react-native-paper';
-import SafeAreaViewAndroid from '../utils/SafeAreaViewAndroid';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser, clearError, clearMessage, updateProfile, loadUser, verifyUser, updatePassword } from '../redux/action';
 import mime from 'mime';
 import Toast from 'react-native-toast-message';
+// import SafeAreaViewAndroid from '../utils/SafeAreaViewAndroid';
 
-const Main = ({ navigation, ...rest }) => {
+const Profile = ({ navigation, ...rest }) => {
     const { route } = rest;
     const dispatch = useDispatch();
     const { user: authUser, loading: authLoading, error: authError, message: authMessage } = useSelector(state => state.auth);
@@ -213,11 +213,11 @@ const Main = ({ navigation, ...rest }) => {
     )
 }
 
-const Profile = ({ navigation, ...rest }) => {
-    return (
-        <SafeAreaViewAndroid Component={Main} navigation={navigation} {...rest} />
-    )
-}
+// const Profile = ({ navigation, ...rest }) => {
+//     return (
+//         <SafeAreaViewAndroid Component={Main} navigation={navigation} {...rest} />
+//     )
+// }
 
 export default Profile;
 
