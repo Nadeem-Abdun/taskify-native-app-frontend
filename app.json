@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "taskify-native-app-frontend",
+    "name": "Taskify",
     "slug": "taskify-native-app-frontend",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/taskify.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
@@ -28,7 +28,7 @@
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/taskify.png"
     },
     "extra": {
       "eas": {
