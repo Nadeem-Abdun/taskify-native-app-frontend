@@ -1,5 +1,5 @@
 import React, { useEffect, forwardRef } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, StatusBar, SafeAreaView } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from './screens/Home';
 import SignIn from './screens/SignIn';
@@ -32,7 +32,8 @@ const Main = forwardRef((props, ref) => {
     }, [dispatch]);
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
+            <StatusBar barStyle="light-content" animated={true} backgroundColor="#900" hidden={false} showHideTransition='none' />
             {authLoading ?
                 <Loader />
                 :
@@ -49,7 +50,7 @@ const Main = forwardRef((props, ref) => {
             }
             <Footer />
             <Toast ref={ref} />
-        </View>
+        </SafeAreaView>
     );
 });
 
