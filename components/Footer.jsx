@@ -28,6 +28,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-evenly',
         alignItems: 'center',
         paddingVertical: 5,
+        backgroundColor: '#fff',
     },
     btn: {
         backgroundColor: '#fff',

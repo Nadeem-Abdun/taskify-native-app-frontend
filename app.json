@@ -23,7 +23,7 @@
       "package": "com.nadeem_abdun.taskifynativeappfrontend",
       "versionCode": 1,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/taskify.png",
         "backgroundColor": "#ffffff"
       }
     },
